@@ -89,7 +89,7 @@ services:
       --backend-store-uri postgresql+psycopg2://${POSTGRES_USER:-vayunetra}:${POSTGRES_PASSWORD:-vayunetra_dev_change_me}@postgis:5432/${POSTGRES_DB:-vayunetra}
       --default-artifact-root s3://mlflow/"
     ports:
-      - "5000:5000"
+      - "5050:5000"
 
   prefect-server:
     image: prefecthq/prefect:2.20-python3.11

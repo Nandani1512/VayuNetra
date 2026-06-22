@@ -93,7 +93,12 @@ def pull_osm(city: str) -> dict[str, Any]:
     );
     out geom;
     """
-    r = httpx.post(OVERPASS_URL, data={"data": q}, timeout=180)
+    r = httpx.post(
+        OVERPASS_URL,
+        data={"data": q},
+        timeout=180,
+        headers={"User-Agent": "VayuNetra/0.1 (research project; contact via github)"},
+    )
     r.raise_for_status()
     data = r.json()
     cache_file.write_text(json.dumps(data))

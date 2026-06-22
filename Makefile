@@ -74,6 +74,14 @@ predict-grid: ## Predict 1km grid for a city/horizon and write into forecast tab
 	poetry run python -m vayunetra.models.lur.predictor \
 	  --city $${city:-delhi} --pollutant $${pollutant:-pm25} --horizon $${horizon:-24}
 
+enforce: ## Run hotspot detection + LLM brief for a city
+	.venv/bin/python -c "import asyncio, json; from vayunetra.enforcement.service import enforce; \
+	  print(json.dumps(asyncio.run(enforce(city='$${city:-delhi}', horizon_h=$${horizon:-24})), indent=2, default=str))"
+
+serve: ## Run the FastAPI + UI on http://127.0.0.1:8000
+	set -a && source .env && set +a && \
+	.venv/bin/uvicorn vayunetra.api.main:app --host 127.0.0.1 --port 8000 --reload
+
 smoke: ## Hit every API endpoint and verify p95 budgets
 	poetry run python scripts/smoke_endpoints.py
 

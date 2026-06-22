@@ -3,8 +3,7 @@ FROM python:3.11-slim AS base
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.8.3 \
-    POETRY_VIRTUALENVS_CREATE=false
+    UV_SYSTEM_PYTHON=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
@@ -16,18 +15,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install "poetry==${POETRY_VERSION}"
+# uv for fast installs
+RUN pip install uv==0.4.30
 
 WORKDIR /app
 
-COPY pyproject.toml ./
-RUN poetry install --no-root --without dev
-
+COPY pyproject.toml README.md ./
 COPY src ./src
 COPY conf ./conf
 
-# Install the package itself
-RUN pip install -e .
+RUN uv pip install --system -e .
 
 EXPOSE 8000
 

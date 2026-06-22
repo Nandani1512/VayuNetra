@@ -55,10 +55,10 @@ See `implementation_plan.md` §1.
 | 1 — Data ingestion + storage | done |
 | 2 — Forecast | done |
 | 3 — LUR downscaling | done |
-| 4 — Source attribution | not started |
-| 5 — Enforcement intelligence | not started |
-| 6 — API + agents | not started |
-| 7 — Web UI | not started |
+| 4 — Source attribution | done |
+| 5 — Enforcement intelligence | done |
+| 6 — API + agents | done (REST; LangGraph deferred) |
+| 7 — Web UI | done (MapLibre single-page) |
 | 8 — Citizen bot | not started |
 | 9 — Eval harness | not started |
 | 10 — MLOps | continuous |

@@ -24,8 +24,8 @@ features:
   use_calendar: true
 
 split:
-  test_days: 7
-  val_days: 30
+  test_days: 1
+  val_days: 1
 
 acceptance:
   min_rmse_improvement_24h: 0.15

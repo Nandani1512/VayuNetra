@@ -1,0 +1,84 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #0d1626; background: #0d1626; }
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; background: linear-gradient(90deg, #0d1626 0%, #1b2742 100%);
+  color: #e7ecf8; border-bottom: 1px solid #243152;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo {
+  width: 38px; height: 38px; border-radius: 9px;
+  background: linear-gradient(135deg, #5fb7ff, #b06bff);
+  color: #0d1626; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.title { font-weight: 700; font-size: 18px; letter-spacing: 0.2px; }
+.subtitle { font-size: 12px; color: #93a3c7; }
+
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.controls label { font-size: 11px; color: #93a3c7; display: flex; flex-direction: column; gap: 2px; }
+.controls select {
+  background: #0d1626; color: #e7ecf8; border: 1px solid #243152;
+  padding: 6px 10px; border-radius: 6px; font-size: 13px;
+}
+button {
+  cursor: pointer; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600;
+  border: 1px solid #243152; background: #1b2742; color: #e7ecf8;
+}
+button.primary { background: linear-gradient(135deg, #5fb7ff, #b06bff); color: #0d1626; border: none; }
+button.ghost { background: transparent; }
+button:hover { filter: brightness(1.1); }
+
+main { flex: 1; display: flex; min-height: 0; }
+#map { flex: 1; }
+
+aside#panel {
+  width: 420px; background: #f7f9ff; color: #1a2240; padding: 18px;
+  overflow-y: auto; border-left: 1px solid #243152;
+}
+aside h2 { margin: 0 0 12px; font-size: 18px; }
+aside h3 { font-size: 13px; margin: 12px 0 6px; color: #4a5878; text-transform: uppercase; letter-spacing: 0.5px; }
+aside p, aside li { font-size: 14px; line-height: 1.5; }
+.close { float: right; background: transparent; border: none; color: #4a5878; font-size: 16px; cursor: pointer; padding: 0; }
+
+.legend { margin-top: 16px; }
+.legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 4px 0; }
+.legend-row span { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.08); }
+
+.advisory { margin-top: 18px; padding: 12px; border-radius: 8px; background: #eaf3ff; border-left: 4px solid #5fb7ff; }
+.advisory h4 { margin: 0 0 4px; font-size: 13px; }
+.advisory p { margin: 0; font-size: 13px; color: #2a3550; }
+.advisory.severity-good    { background: #ecf9e0; border-left-color: #6fa83a; }
+.advisory.severity-moderate { background: #fff7d8; border-left-color: #d6a800; }
+.advisory.severity-poor    { background: #ffe8e0; border-left-color: #e26b3c; }
+.advisory.severity-severe  { background: #f0d8e6; border-left-color: #8c2161; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat { padding: 10px; border-radius: 8px; background: #eef2ff; border: 1px solid #d8e0f4; }
+.stat .k { font-size: 10px; text-transform: uppercase; color: #4a5878; }
+.stat .v { font-size: 18px; font-weight: 700; margin-top: 2px; }
+
+.bar { height: 8px; border-radius: 4px; background: #d8e0f4; overflow: hidden; margin: 4px 0; }
+.bar > div { height: 100%; background: linear-gradient(90deg, #5fb7ff, #b06bff); }
+
+.muted { color: #4a5878; }
+.small { font-size: 12px; }
+pre.brief { background: #0d1626; color: #e7ecf8; padding: 14px; border-radius: 8px; white-space: pre-wrap; font-size: 12px; line-height: 1.55; }
+.brief-md { background: #0d1626; color: #e7ecf8; padding: 14px 16px; border-radius: 8px; font-size: 12px; line-height: 1.6; }
+.brief-md h1, .brief-md h2, .brief-md h3 { color: #b06bff; margin: 12px 0 6px; font-size: 13px; }
+.brief-md ul { margin: 4px 0 8px; padding-left: 18px; }
+
+#loading {
+  position: fixed; bottom: 18px; left: 18px;
+  background: #0d1626; color: #e7ecf8;
+  padding: 10px 18px; border-radius: 8px; font-size: 13px;
+  border: 1px solid #243152; box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  display: flex; align-items: center; gap: 8px;
+}
+#loading::before {
+  content: ""; width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid #5fb7ff; border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

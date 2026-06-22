@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>VayuNetra — Air Intelligence Eye</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">VN</div>
+      <div>
+        <div class="title">VayuNetra</div>
+        <div class="subtitle">Air Intelligence Eye — Forecast · Attribute · Enforce</div>
+      </div>
+    </div>
+    <div class="controls">
+      <label>City
+        <select id="city">
+          <option value="delhi" selected>Delhi</option>
+          <option value="bengaluru">Bengaluru</option>
+        </select>
+      </label>
+      <label>Pollutant
+        <select id="pollutant">
+          <option value="pm25" selected>PM2.5</option>
+          <option value="pm10">PM10</option>
+          <option value="no2">NO₂</option>
+        </select>
+      </label>
+      <label>Horizon
+        <select id="horizon">
+          <option value="24" selected>+24h</option>
+          <option value="48">+48h</option>
+          <option value="72">+72h</option>
+        </select>
+      </label>
+      <label>Language
+        <select id="lang">
+          <option value="en" selected>English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </label>
+      <button id="loadHotspots" class="ghost">Show Hotspots</button>
+      <button id="loadEnforce" class="primary">Run Enforcement</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="map"></div>
+    <aside id="panel">
+      <div id="panel-default">
+        <h2>How to use</h2>
+        <ol>
+          <li>Pick a city, pollutant and horizon.</li>
+          <li>Click any cell on the map for forecast + attribution.</li>
+          <li>Click <b>Show Hotspots</b> to highlight statistically significant clusters.</li>
+          <li>Click <b>Run Enforcement</b> for the LLM-authored brief.</li>
+        </ol>
+        <div class="legend">
+          <h3>AQI band (PM2.5 µg/m³)</h3>
+          <div class="legend-row"><span style="background:#a8e05f"></span> Good (≤30)</div>
+          <div class="legend-row"><span style="background:#fdd64b"></span> Satisfactory (≤60)</div>
+          <div class="legend-row"><span style="background:#ff9b57"></span> Moderate (≤90)</div>
+          <div class="legend-row"><span style="background:#fe6a69"></span> Poor (≤120)</div>
+          <div class="legend-row"><span style="background:#a97abc"></span> Very Poor (≤250)</div>
+          <div class="legend-row"><span style="background:#a87383"></span> Severe (&gt;250)</div>
+        </div>
+        <div id="advisoryBox" class="advisory"></div>
+      </div>
+
+      <div id="panel-cell" hidden>
+        <button class="close" onclick="closeCell()">✕</button>
+        <h2 id="cell-title">Cell —</h2>
+        <div id="cell-stats" class="stats"></div>
+        <div id="cell-attribution"></div>
+        <div id="cell-evidence"></div>
+      </div>
+
+      <div id="panel-enforce" hidden>
+        <button class="close" onclick="closeEnforce()">✕</button>
+        <h2>Enforcement Brief</h2>
+        <div id="enforce-meta" class="muted small"></div>
+        <div id="enforce-content"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="loading" hidden>Working…</div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

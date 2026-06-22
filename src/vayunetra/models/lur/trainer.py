@@ -49,9 +49,11 @@ def _train_one(df: pd.DataFrame, feat_cols: list[str], lgb_params: dict,
 
 
 def loso_cv(df: pd.DataFrame, feat_cols: list[str], lgb_params: dict,
-            n_estimators: int) -> pd.DataFrame:
+            n_estimators: int, max_stations: int = 15) -> pd.DataFrame:
     rows = []
     stations = df["station_id"].astype(str).unique().tolist()
+    # Cap CV iterations for hackathon demo runs; full LOSO is O(N) training runs.
+    stations = stations[:max_stations]
     for sid in stations:
         mask = df["station_id"].astype(str) == sid
         train = df[~mask]

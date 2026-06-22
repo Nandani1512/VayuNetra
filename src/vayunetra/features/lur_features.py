@@ -312,6 +312,12 @@ def build_training_rows(
             obs[c] = obs[c].fillna(0)
 
     obs["lulc_class"] = obs["lulc_class"].astype("category")
+    # Coerce numeric columns that may come back as object when entirely NULL in DB.
+    for col in ("pop_total", "pop_elderly", "pop_children", "elevation_m",
+                "hospital_count", "school_count", "industry_count",
+                "road_density", "fire_count_50km", "fire_count_100km", "frp_sum_100km"):
+        if col in obs.columns:
+            obs[col] = pd.to_numeric(obs[col], errors="coerce").astype(float)
     obs = obs.rename(columns={"y": "target"})
     obs = obs.dropna(subset=["target"])
     return obs.reset_index(drop=True)
@@ -346,6 +352,11 @@ def build_inference_rows(city: str, ts: datetime) -> pd.DataFrame:
         points[c] = points[c].fillna(0)
 
     points["lulc_class"] = points["lulc_class"].astype("category")
+    for col in ("pop_total", "pop_elderly", "pop_children", "elevation_m",
+                "hospital_count", "school_count", "industry_count",
+                "road_density", "fire_count_50km", "fire_count_100km", "frp_sum_100km"):
+        if col in points.columns:
+            points[col] = pd.to_numeric(points[col], errors="coerce").astype(float)
     return points.reset_index(drop=True)
 
 
