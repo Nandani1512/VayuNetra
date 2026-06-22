@@ -60,6 +60,21 @@
     </div>
   </header>
 
+  <!-- City Summary Stats Banner -->
+  <div id="city-banner" class="city-banner">
+    <div class="banner-stat" id="bn-city"><span class="bn-label">City</span><span class="bn-value" id="bn-city-val">Delhi</span></div>
+    <div class="banner-stat"><span class="bn-label">Mean AQI</span><span class="bn-value" id="bn-mean-aqi">—</span></div>
+    <div class="banner-stat"><span class="bn-label">Cells Poor+</span><span class="bn-value" id="bn-poor-pct">—</span></div>
+    <div class="banner-stat"><span class="bn-label">Top Source</span><span class="bn-value" id="bn-top-src">—</span></div>
+    <div class="banner-stat"><span class="bn-label">Grid Cells</span><span class="bn-value" id="bn-cells">—</span></div>
+  </div>
+
+  <!-- Severe Alert Banner (hidden by default) -->
+  <div id="alert-banner" class="alert-banner" hidden>
+    <span class="alert-icon">⚠️</span>
+    <span id="alert-text">SEVERE AQI detected in multiple zones — immediate intervention recommended</span>
+  </div>
+
   <div id="compare-view" hidden>
     <div class="compare-header">
       <span class="compare-label">Delhi</span>
@@ -71,13 +86,11 @@
       <div id="map-right"></div>
     </div>
     <div id="intervention-chart" class="intervention-chart">
-      <h3>Intervention Effectiveness (Mock)</h3>
-      <div class="chart-bars">
-        <div class="chart-item"><span class="chart-label">Zone A</span><div class="chart-bar-bg"><div class="chart-bar before" style="width:80%">AQI 184</div></div><div class="chart-bar-bg"><div class="chart-bar after" style="width:45%">AQI 102</div></div></div>
-        <div class="chart-item"><span class="chart-label">Zone B</span><div class="chart-bar-bg"><div class="chart-bar before" style="width:65%">AQI 148</div></div><div class="chart-bar-bg"><div class="chart-bar after" style="width:35%">AQI 79</div></div></div>
-        <div class="chart-item"><span class="chart-label">Zone C</span><div class="chart-bar-bg"><div class="chart-bar before" style="width:55%">AQI 126</div></div><div class="chart-bar-bg"><div class="chart-bar after" style="width:28%">AQI 64</div></div></div>
+      <h3>Intervention Effectiveness — Top Hotspot Clusters</h3>
+      <div id="chart-bars-dynamic" class="chart-bars">
+        <p class="muted small">Click "⇄ Compare" to load real enforcement data…</p>
       </div>
-      <div class="chart-legend"><span class="dot before"></span>Before enforcement <span class="dot after"></span>After enforcement</div>
+      <div class="chart-legend"><span class="dot before"></span>Current AQI <span class="dot after"></span>Projected post-intervention</div>
     </div>
   </div>
 
@@ -108,6 +121,7 @@
         <button class="close" onclick="closeCell()">✕</button>
         <h2 id="cell-title">Cell —</h2>
         <div id="cell-stats" class="stats"></div>
+        <div id="cell-sparkline"></div>
         <div id="cell-attribution"></div>
         <div id="cell-evidence"></div>
       </div>
@@ -122,6 +136,24 @@
   </main>
 
   <div id="loading" hidden>Working…</div>
+
+  <!-- Chat Widget -->
+  <div id="chat-widget" class="chat-widget">
+    <button id="chat-toggle" class="chat-toggle" aria-label="Open AI Assistant">🤖</button>
+    <div id="chat-panel" class="chat-panel" hidden>
+      <div class="chat-header">
+        <span>VayuNetra AI Agent</span>
+        <button onclick="toggleChat()" class="chat-close">✕</button>
+      </div>
+      <div id="chat-messages" class="chat-messages">
+        <div class="chat-msg bot">Hi! I'm the VayuNetra AI agent. Ask me about air quality, forecasts, pollution sources, or enforcement actions for any city.</div>
+      </div>
+      <div class="chat-input-row">
+        <input id="chat-input" type="text" placeholder="Ask about air quality…" autocomplete="off" />
+        <button id="chat-send" class="primary">→</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/static/app.js"></script>
 </body>
