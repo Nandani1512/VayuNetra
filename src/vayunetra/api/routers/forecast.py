@@ -33,14 +33,14 @@ async def forecast_geojson(
         # still renders something instead of an empty map on the demo.
         sql = text(
             """
-            SELECT MAX(ts_target) AS t FROM forecast
+            SELECT MAX(ts_target) AS ts_max FROM forecast
             WHERE city_id=:city AND pollutant=:pollutant
             """
         )
         with get_engine().begin() as conn:
             row = conn.execute(sql, {"city": city, "pollutant": pollutant}).fetchone()
-        if row and row.t:
-            ts_issued = row.t - pd.Timedelta(hours=horizon)
+        if row and row.ts_max:
+            ts_issued = row.ts_max - pd.Timedelta(hours=horizon)
             key = TileKey(city=city, pollutant=pollutant, horizon_h=horizon, ts_issued=ts_issued)
             gj = await get_or_build_tile(key, ttl_s=3600)
     return JSONResponse(gj)

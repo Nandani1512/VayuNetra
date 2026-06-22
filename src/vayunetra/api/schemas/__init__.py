@@ -64,3 +64,6 @@ class AdvisoryResponse(BaseModel):
     aqi_p50: float
     pollutant: str
     issued_at: datetime
+    vuln_tier: str = "general"
+    citation_source: str | None = None
+    citation_text: str | None = None
