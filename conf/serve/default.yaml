@@ -1,0 +1,21 @@
+host: 0.0.0.0
+port: 8000
+workers: 2
+
+cache:
+  forecast_ttl_s: 60
+  attribution_ttl_s: 300
+  advisory_ttl_s: 300
+
+rate_limits:
+  public_per_minute: 60
+  inspector_per_minute: 600
+
+latency_budgets_ms:
+  healthz: 50
+  forecast: 1500
+  forecast_cell: 500
+  attribution: 2500
+  enforce: 4000
+  advisory: 1000
+  agents_ask: 8000

@@ -1,0 +1,20 @@
+# Maps LUR features to source categories used by the SHAP-based attribution.
+# Values: source category name.
+feature_to_source:
+  road_density: vehicular
+  s5p_no2: vehicular
+  industry_count: industrial
+  s5p_so2: industrial
+  fire_count_50km: biomass_burning
+  fire_count_100km: biomass_burning
+  frp_sum_100km: biomass_burning
+  modis_aod: dust_mixed
+  pop_total: secondary
+  lulc_class: secondary
+  hospital_count: secondary
+  temp_c: meteorological
+  wind_u: meteorological
+  wind_v: meteorological
+  pbl_m: meteorological
+  rh_pct: meteorological
+  elevation_m: terrain

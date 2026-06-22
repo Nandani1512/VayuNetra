@@ -1,0 +1,5 @@
+name: firms
+base_url: https://firms.modaps.eosdis.nasa.gov/api/area/csv
+sensor: VIIRS_SNPP_NRT
+day_range: 1
+schedule_cron: "0 */6 * * *"

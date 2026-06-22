@@ -1,0 +1,12 @@
+name: cams
+dataset: cams-global-atmospheric-composition-forecasts
+variables:
+  - nitrogen_dioxide
+  - sulphur_dioxide
+  - particulate_matter_2.5um
+  - particulate_matter_10um
+  - carbon_monoxide
+  - ozone
+forecast_hours: [0, 12, 24, 36, 48, 60, 72]
+schedule_cron: "0 4 * * *"
+trigger_on_gap_only: true

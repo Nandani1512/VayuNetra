@@ -1,0 +1,11 @@
+name: openaq
+base_url: https://api.openaq.org/v3
+rate_limit_per_minute: 60
+schedule_cron: "*/30 * * * *"
+pollutants: [pm25, pm10, no2, so2, o3, co]
+page_limit: 1000
+max_pages: 50
+retry:
+  max_attempts: 6
+  initial_wait_s: 1.0
+  max_wait_s: 30.0

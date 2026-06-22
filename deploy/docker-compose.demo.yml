@@ -1,0 +1,18 @@
+# Overlay file. Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.demo.yml --profile demo up -d
+# Sets DEMO_MODE so endpoints serve frozen snapshots from MinIO bucket vayunetra-demo.
+
+services:
+  api:
+    environment:
+      DEMO_MODE: "true"
+
+  minio-init:
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin_dev_change_me};
+      mc mb -p local/${MINIO_BUCKET:-vayunetra} || true;
+      mc mb -p local/mlflow || true;
+      mc mb -p local/vayunetra-demo || true;
+      mc anonymous set download local/vayunetra-demo || true;
+      "

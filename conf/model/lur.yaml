@@ -1,0 +1,24 @@
+name: lightgbm_lur
+target: pm25_surface
+
+features:
+  satellite: [s5p_no2, s5p_so2, modis_aod]
+  meteo: [temp_c, wind_u, wind_v, pbl_m, rh_pct]
+  static: [road_density, industry_count, hospital_count, lulc_class, pop_total, elevation_m]
+  fire: [fire_count_50km, fire_count_100km, frp_sum_100km]
+
+lightgbm:
+  objective: regression
+  metric: rmse
+  n_estimators: 1500
+  learning_rate: 0.05
+  num_leaves: 63
+  min_child_samples: 30
+  early_stopping_rounds: 100
+  verbose: -1
+
+cv:
+  strategy: leave_one_station_out
+
+acceptance:
+  max_rmse_over_std: 0.7

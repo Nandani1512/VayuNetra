@@ -1,0 +1,14 @@
+id: bengaluru
+name: Bengaluru
+bbox: [77.45, 12.83, 77.78, 13.14]
+timezone: Asia/Kolkata
+default_lang: kn
+primary_pollutant: pm25
+grid_resolution_m: 1000
+crop_burn_season:
+  start_month_day: "01-01"
+  end_month_day:   "01-01"  # not applicable in Bengaluru
+diwali_dates:
+  - "2024-11-01"
+  - "2025-10-21"
+  - "2026-11-08"

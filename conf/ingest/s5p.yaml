@@ -1,0 +1,25 @@
+name: sentinel_5p_via_gee
+schedule_cron: "0 2 * * *"
+products:
+  no2:
+    collection: COPERNICUS/S5P/OFFL/L3_NO2
+    band: tropospheric_NO2_column_number_density
+    qa_band: qa_value
+    qa_threshold: 0.75
+  so2:
+    collection: COPERNICUS/S5P/OFFL/L3_SO2
+    band: SO2_column_number_density
+    qa_band: qa_value
+    qa_threshold: 0.5
+  co:
+    collection: COPERNICUS/S5P/OFFL/L3_CO
+    band: CO_column_number_density
+    qa_band: qa_value
+    qa_threshold: 0.5
+  aod:
+    collection: MODIS/061/MCD19A2_GRANULES
+    band: Optical_Depth_055
+    qa_band: AOD_QA
+    qa_threshold: 0
+target_resolution_deg: 0.05
+gap_threshold_pct: 40

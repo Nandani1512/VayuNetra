@@ -1,0 +1,12 @@
+name: open_meteo
+base_url: https://api.open-meteo.com/v1/forecast
+schedule_cron: "0 */6 * * *"
+hourly_vars:
+  - temperature_2m
+  - relativehumidity_2m
+  - windspeed_10m
+  - winddirection_10m
+  - boundary_layer_height
+  - precipitation
+past_days: 2
+forecast_days: 3

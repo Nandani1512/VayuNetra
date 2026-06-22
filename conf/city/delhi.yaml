@@ -1,0 +1,16 @@
+id: delhi
+name: Delhi
+# bbox: minLon, minLat, maxLon, maxLat (EPSG:4326)
+bbox: [76.84, 28.40, 77.35, 28.88]
+timezone: Asia/Kolkata
+default_lang: hi
+primary_pollutant: pm25
+grid_resolution_m: 1000
+# Crop-burning season: late Oct through Nov (Delhi NCR)
+crop_burn_season:
+  start_month_day: "10-15"
+  end_month_day:   "11-30"
+diwali_dates:
+  - "2024-11-01"
+  - "2025-10-21"
+  - "2026-11-08"

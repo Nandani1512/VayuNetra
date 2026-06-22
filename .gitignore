@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtualenv
+.venv/
+venv/
+env/
+
+# Poetry
+poetry.lock
+
+# Environments
+.env
+.env.local
+secrets/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Data / artifacts
+data/cache/
+data/snapshots/
+!data/snapshots/.gitkeep
+data/templates/
+reports/
+mlruns/
+mlartifacts/
+
+# DVC
+/dvc.lock
+
+# Docker
+*.pid
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/*.ipynb
+
+# OS
+Thumbs.db

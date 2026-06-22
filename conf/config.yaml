@@ -1,0 +1,12 @@
+defaults:
+  - city: delhi
+  - model: forecast
+  - ingest: openaq
+  - serve: default
+  - _self_
+
+# Global runtime knobs
+seed: 42
+data_dir: data
+artifacts_dir: data/artifacts
+snapshots_dir: data/snapshots
