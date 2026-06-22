@@ -53,8 +53,8 @@ See `implementation_plan.md` §1.
 |------:|--------|
 | 0 — Foundation | done |
 | 1 — Data ingestion + storage | done |
-| 2 — Forecast | not started |
-| 3 — LUR downscaling | not started |
+| 2 — Forecast | done |
+| 3 — LUR downscaling | done |
 | 4 — Source attribution | not started |
 | 5 — Enforcement intelligence | not started |
 | 6 — API + agents | not started |

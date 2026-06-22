@@ -54,6 +54,26 @@ bootstrap: ## Pull 6 months of history into a DVC snapshot
 eval: ## Run the full evaluation harness
 	poetry run python -m vayunetra.eval.run --all
 
+train-forecast: ## Train the LightGBM quantile forecaster (params: city, pollutant, horizon)
+	poetry run python -m vayunetra.models.forecast.lightgbm_trainer \
+	  --city $${city:-delhi} --pollutant $${pollutant:-pm25} --horizon $${horizon:-24}
+
+loso-cv: ## Leave-one-station-out CV for the forecast model
+	poetry run python -m vayunetra.models.forecast.cv \
+	  --city $${city:-delhi} --pollutant $${pollutant:-pm25} --horizon $${horizon:-24}
+
+eval-forecast: ## Walk-forward evaluation across horizons
+	poetry run python -m vayunetra.eval.walk_forward \
+	  --city $${city:-delhi} --pollutant $${pollutant:-pm25}
+
+train-lur: ## Train the LUR downscaling model
+	poetry run python -m vayunetra.models.lur.trainer \
+	  --city $${city:-delhi} --pollutant $${pollutant:-pm25}
+
+predict-grid: ## Predict 1km grid for a city/horizon and write into forecast table
+	poetry run python -m vayunetra.models.lur.predictor \
+	  --city $${city:-delhi} --pollutant $${pollutant:-pm25} --horizon $${horizon:-24}
+
 smoke: ## Hit every API endpoint and verify p95 budgets
 	poetry run python scripts/smoke_endpoints.py
 
