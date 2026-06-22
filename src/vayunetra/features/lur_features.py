@@ -47,6 +47,25 @@ SAT_PRODUCTS = ("s5p_no2", "s5p_so2", "s5p_co", "modis_aod")
 
 METEO_COLS = ("temp_c", "wind_u", "wind_v", "pbl_m", "rh_pct", "precip_mm")
 
+TRAFFIC_COLS = ("route_density", "congestion_level")
+
+
+def _load_traffic_features(city: str, ts: datetime) -> pd.DataFrame:
+    """Load latest traffic density per cell as LUR features."""
+    sql = text(
+        """
+        SELECT DISTINCT ON (cell_id) cell_id,
+               congestion_level,
+               speed_ratio AS route_density
+        FROM traffic_density
+        WHERE city_id = :city AND ts <= :ts
+        ORDER BY cell_id, ts DESC
+        """
+    )
+    with get_engine().begin() as conn:
+        df = pd.read_sql(sql, conn, params={"city": city, "ts": ts})
+    return df
+
 
 def _load_satellite_daily_per_cell(city: str, since: datetime, until: datetime) -> pd.DataFrame:
     """Returns ts (day floor), cell_centroid_lon/lat, and one column per product.
@@ -311,11 +330,21 @@ def build_training_rows(
         if c in obs.columns:
             obs[c] = obs[c].fillna(0)
 
+    # Attach dynamic traffic features (use midpoint of window)
+    traffic = _load_traffic_features(city, until)
+    if not traffic.empty and "cell_id" in obs.columns:
+        obs = obs.merge(traffic, on="cell_id", how="left")
+    for c in TRAFFIC_COLS:
+        if c not in obs.columns:
+            obs[c] = 0.0
+        obs[c] = obs[c].fillna(0.0)
+
     obs["lulc_class"] = obs["lulc_class"].astype("category")
     # Coerce numeric columns that may come back as object when entirely NULL in DB.
     for col in ("pop_total", "pop_elderly", "pop_children", "elevation_m",
                 "hospital_count", "school_count", "industry_count",
-                "road_density", "fire_count_50km", "fire_count_100km", "frp_sum_100km"):
+                "road_density", "fire_count_50km", "fire_count_100km", "frp_sum_100km",
+                "route_density", "congestion_level"):
         if col in obs.columns:
             obs[col] = pd.to_numeric(obs[col], errors="coerce").astype(float)
     obs = obs.rename(columns={"y": "target"})
@@ -351,10 +380,20 @@ def build_inference_rows(city: str, ts: datetime) -> pd.DataFrame:
     for c in ("fire_count_50km", "fire_count_100km", "frp_sum_100km"):
         points[c] = points[c].fillna(0)
 
+    # Attach dynamic traffic features
+    traffic = _load_traffic_features(city, ts)
+    if not traffic.empty:
+        points = points.merge(traffic, on="cell_id", how="left")
+    for c in TRAFFIC_COLS:
+        if c not in points.columns:
+            points[c] = 0.0
+        points[c] = points[c].fillna(0.0)
+
     points["lulc_class"] = points["lulc_class"].astype("category")
     for col in ("pop_total", "pop_elderly", "pop_children", "elevation_m",
                 "hospital_count", "school_count", "industry_count",
-                "road_density", "fire_count_50km", "fire_count_100km", "frp_sum_100km"):
+                "road_density", "fire_count_50km", "fire_count_100km", "frp_sum_100km",
+                "route_density", "congestion_level"):
         if col in points.columns:
             points[col] = pd.to_numeric(points[col], errors="coerce").astype(float)
     return points.reset_index(drop=True)

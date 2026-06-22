@@ -223,5 +223,8 @@ def build_features(
 
 
 def feature_columns(df: pd.DataFrame) -> list[str]:
-    drop = {"ts", "ts_target", "target", "y"}
+    """Columns the model trains on. `y` (the value at issuance time) is kept —
+    at prediction time we know the current observation, so persistence-equivalent
+    behaviour is a floor, not a ceiling."""
+    drop = {"ts", "ts_target", "target"}
     return [c for c in df.columns if c not in drop]

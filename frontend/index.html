@@ -42,13 +42,44 @@
         <select id="lang">
           <option value="en" selected>English</option>
           <option value="hi">हिन्दी</option>
+          <option value="bn">বাংলা</option>
+          <option value="mr">मराठी</option>
+          <option value="te">తెలుగు</option>
+          <option value="ta">தமிழ்</option>
+          <option value="gu">ગુજરાતી</option>
           <option value="kn">ಕನ್ನಡ</option>
+          <option value="ml">മലയാളം</option>
+          <option value="or">ଓଡ଼ିଆ</option>
+          <option value="pa">ਪੰਜਾਬੀ</option>
+          <option value="as">অসমীয়া</option>
         </select>
       </label>
       <button id="loadHotspots" class="ghost">Show Hotspots</button>
       <button id="loadEnforce" class="primary">Run Enforcement</button>
+      <button id="btnCompare" class="ghost">⇄ Compare</button>
     </div>
   </header>
+
+  <div id="compare-view" hidden>
+    <div class="compare-header">
+      <span class="compare-label">Delhi</span>
+      <span class="compare-label">Bengaluru</span>
+      <button id="btnExitCompare" class="ghost">✕ Exit Compare</button>
+    </div>
+    <div class="compare-maps">
+      <div id="map-left"></div>
+      <div id="map-right"></div>
+    </div>
+    <div id="intervention-chart" class="intervention-chart">
+      <h3>Intervention Effectiveness (Mock)</h3>
+      <div class="chart-bars">
+        <div class="chart-item"><span class="chart-label">Zone A</span><div class="chart-bar-bg"><div class="chart-bar before" style="width:80%">AQI 184</div></div><div class="chart-bar-bg"><div class="chart-bar after" style="width:45%">AQI 102</div></div></div>
+        <div class="chart-item"><span class="chart-label">Zone B</span><div class="chart-bar-bg"><div class="chart-bar before" style="width:65%">AQI 148</div></div><div class="chart-bar-bg"><div class="chart-bar after" style="width:35%">AQI 79</div></div></div>
+        <div class="chart-item"><span class="chart-label">Zone C</span><div class="chart-bar-bg"><div class="chart-bar before" style="width:55%">AQI 126</div></div><div class="chart-bar-bg"><div class="chart-bar after" style="width:28%">AQI 64</div></div></div>
+      </div>
+      <div class="chart-legend"><span class="dot before"></span>Before enforcement <span class="dot after"></span>After enforcement</div>
+    </div>
+  </div>
 
   <main>
     <div id="map"></div>

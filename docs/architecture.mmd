@@ -1,0 +1,87 @@
+%% VayuNetra — system architecture
+%% Render: mmdc -i docs/architecture.mmd -o docs/architecture.png  (mermaid-cli)
+%% or paste into https://mermaid.live
+flowchart TB
+    subgraph SRC["Public data sources (free)"]
+        OAQ["OpenAQ v3<br/>ground stations"]
+        OM["Open-Meteo<br/>weather"]
+        S5P["Sentinel-5P / MODIS<br/>via Google Earth Engine"]
+        FIRMS["NASA FIRMS<br/>fire hotspots"]
+        CAMS["CAMS reanalysis<br/>(gap backfill)"]
+        OSM["OSM + WorldPop + LULC<br/>(static layers)"]
+    end
+
+    subgraph ING["Ingestion — Prefect flows"]
+        FLOWS["openaq · open_meteo · gee<br/>firms · cams · static_layers"]
+    end
+
+    subgraph STORE["Storage"]
+        PG[("PostGIS + TimescaleDB<br/>observation · weather · satellite_column<br/>fire_event · grid_cell · forecast · enforcement_log")]
+        MINIO[("MinIO<br/>rasters · MLflow artifacts")]
+        REDIS[("Redis<br/>tile + trajectory cache")]
+    end
+
+    subgraph FEAT["Features"]
+        MV["mv_forecast_features<br/>(lags · rolling · diurnal · met · S5P)"]
+    end
+
+    subgraph TRAIN["Training → MLflow registry"]
+        FC["LightGBM quantile<br/>forecast (p10/p50/p90)"]
+        LUR["LUR downscaler<br/>1 km grid"]
+        BASE["baselines<br/>persistence · climatology"]
+    end
+
+    subgraph SERVE["FastAPI serving"]
+        API["/forecast · /forecast/cell<br/>/attribution · /enforce (JWT)<br/>/advisory · /healthz · /metrics/"]
+        LG["LangGraph supervisor<br/>(ENABLE_LANGGRAPH flag)"]
+    end
+
+    subgraph INTEL["Intelligence modules"]
+        ATTR["Attribution<br/>SHAP + back-trajectory + overlays"]
+        ENF["Enforcement<br/>Getis-Ord Gi* + DBSCAN + LLM brief"]
+        ADV["Advisory<br/>12-lang templates + TF-IDF RAG"]
+    end
+
+    subgraph CLIENTS["Clients"]
+        UI["MapLibre web UI<br/>(Delhi + Bengaluru)"]
+        TG["Telegram bot<br/>(consent + daily advisory)"]
+    end
+
+    subgraph OBS["MLOps & observability"]
+        EVAL["eval harness<br/>reports/eval_*/summary.md"]
+        DRIFT["Evidently drift"]
+        DQ["data-quality suites"]
+        PROM["Prometheus + alerts"]
+        GRAF["Grafana dashboards"]
+        OTEL["OpenTelemetry traces"]
+    end
+
+    SRC --> FLOWS --> PG
+    FLOWS --> MINIO
+    PG --> MV --> TRAIN
+    TRAIN --> PG
+    BASE -.compare.-> EVAL
+    PG --> API
+    REDIS <--> API
+    MINIO <--> API
+    API --> INTEL
+    INTEL --> API
+    LG -.optional.-> INTEL
+    API --> LG
+    API --> UI
+    API --> TG
+    TRAIN --> EVAL
+    MV --> DRIFT
+    PG --> DQ
+    API -- /metrics --> PROM --> GRAF
+    API --> OTEL
+    EVAL -- RMSE/lift gauges --> PROM
+
+    classDef src fill:#eef7ff,stroke:#2980b9;
+    classDef store fill:#fff5e6,stroke:#e67e22;
+    classDef serve fill:#eafaf1,stroke:#27ae60;
+    classDef obs fill:#f9ecf9,stroke:#8e44ad;
+    class OAQ,OM,S5P,FIRMS,CAMS,OSM src;
+    class PG,MINIO,REDIS store;
+    class API,LG serve;
+    class EVAL,DRIFT,DQ,PROM,GRAF,OTEL obs;

@@ -1,4 +1,4 @@
-.PHONY: help up down demo logs ps test lint fmt ingest bootstrap eval verify-keys clean migrate shell
+.PHONY: help up down demo logs ps test lint fmt ingest bootstrap eval drift data-quality verify-keys clean migrate shell
 
 COMPOSE      := docker compose -f deploy/docker-compose.yml --env-file .env
 COMPOSE_DEMO := docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.demo.yml --env-file .env
@@ -53,6 +53,12 @@ bootstrap: ## Pull 6 months of history into a DVC snapshot
 
 eval: ## Run the full evaluation harness
 	poetry run python -m vayunetra.eval.run --all
+
+drift: ## Generate an Evidently feature-drift report into reports/drift/
+	poetry run python -m vayunetra.mlops.drift --city $${city:-delhi} --pollutant $${pollutant:-pm25}
+
+data-quality: ## Run data-quality expectation suites over core tables
+	poetry run python -m vayunetra.mlops.data_quality --table $${table:-all}
 
 train-forecast: ## Train the LightGBM quantile forecaster (params: city, pollutant, horizon)
 	poetry run python -m vayunetra.models.forecast.lightgbm_trainer \

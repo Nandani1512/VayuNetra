@@ -137,7 +137,8 @@ async function refreshAdvisory() {
     const el = $("advisoryBox");
     el.className = `advisory severity-${a.severity}`;
     el.innerHTML = `<h4>${escapeHtml(a.headline)}</h4><p>${escapeHtml(a.advice)}</p>` +
-                   `<p class="muted small">Citizen advisory · ${a.lang.toUpperCase()} · issued ${new Date(a.issued_at).toLocaleString()}</p>`;
+                   `<p class="muted small">AQI p50: ${Math.round(a.aqi_p50)} · Tier: ${a.vuln_tier} · ${a.lang.toUpperCase()} · ${new Date(a.issued_at).toLocaleTimeString()}</p>` +
+                   (a.citation_text ? `<p class="muted small">📖 ${escapeHtml(a.citation_text.slice(0, 120))}…</p>` : "");
   } catch (e) {
     /* ignore on errors */
   }
@@ -308,3 +309,69 @@ function markdown(src) {
     .replace(/\n{2,}/g, "<br><br>")
     .replace(/\n/g, " ");
 }
+
+// --- Compare Mode ---
+let compareActive = false;
+let mapLeft = null, mapRight = null;
+
+const COMPARE_STYLE = {
+  version: 8,
+  sources: { "carto-dark": { type: "raster", tiles: [
+    "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+    "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+  ], tileSize: 256 } },
+  layers: [{ id: "basemap", type: "raster", source: "carto-dark" }],
+};
+
+const FORECAST_LAYER = {
+  id: "forecast-fill", type: "fill", source: "forecast",
+  paint: {
+    "fill-color": ["step", ["get", "p50"], "#a8e05f", 30, "#fdd64b", 60, "#ff9b57", 90, "#fe6a69", 120, "#a97abc", 250, "#a87383"],
+    "fill-opacity": 0.55,
+  },
+};
+
+function initCompareMap(container, city) {
+  const cfg = CITY_VIEW[city];
+  const m = new maplibregl.Map({ container, style: COMPARE_STYLE, center: cfg.center, zoom: cfg.zoom });
+  m.on("load", async () => {
+    m.addSource("forecast", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    m.addLayer(FORECAST_LAYER);
+    loadCompareData(m, city);
+  });
+  return m;
+}
+
+async function loadCompareData(m, city) {
+  const { pollutant, horizon } = paramsTriple();
+  try {
+    const r = await fetch(`${API}/forecast?city=${city}&pollutant=${pollutant}&horizon=${horizon}`);
+    if (r.ok) { const gj = await r.json(); m.getSource("forecast").setData(gj); }
+  } catch (e) { /* silent */ }
+}
+
+function enterCompare() {
+  compareActive = true;
+  document.body.classList.add("compare-active");
+  $("compare-view").hidden = false;
+  if (!mapLeft) mapLeft = initCompareMap("map-left", "delhi");
+  else { mapLeft.resize(); loadCompareData(mapLeft, "delhi"); }
+  if (!mapRight) mapRight = initCompareMap("map-right", "bengaluru");
+  else { mapRight.resize(); loadCompareData(mapRight, "bengaluru"); }
+}
+
+function exitCompare() {
+  compareActive = false;
+  document.body.classList.remove("compare-active");
+  $("compare-view").hidden = true;
+}
+
+$("btnCompare").addEventListener("click", enterCompare);
+$("btnExitCompare").addEventListener("click", exitCompare);
+
+// Refresh compare maps when pollutant/horizon change
+["pollutant", "horizon"].forEach((id) => $(id).addEventListener("change", () => {
+  if (!compareActive) return;
+  if (mapLeft && mapLeft.getSource("forecast")) loadCompareData(mapLeft, "delhi");
+  if (mapRight && mapRight.getSource("forecast")) loadCompareData(mapRight, "bengaluru");
+}));

@@ -213,6 +213,7 @@ def train(
         # Test-set predictions for all three quantiles.
         preds = {q: boosters[q].predict(split.test[feat_cols]) for q in QUANTILES}
         y_true = split.test["target"].to_numpy()
+        best_alpha = 1.0
 
         m_p50 = _evaluate(y_true, preds[0.5])
         metrics.update({f"test_p50_{k}": v for k, v in m_p50.items()})
@@ -243,6 +244,8 @@ def train(
                 "feature_columns": feat_cols,
                 "categorical_columns": [c for c in feat_cols if str(df[c].dtype) == "category"],
                 "quantiles": list(QUANTILES),
+                "blend_alpha": float(best_alpha),
+                "use_init_score": False,
                 "trained_at": datetime.now(timezone.utc).isoformat(),
             }
             (Path(td) / "meta.json").write_text(json.dumps(meta, indent=2))

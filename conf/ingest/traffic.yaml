@@ -1,0 +1,7 @@
+name: traffic
+tomtom_base_url: https://api.tomtom.com/traffic/services/4/flowSegmentData/relative0/10/json
+schedule_cron: "0 */2 * * *"
+retry:
+  max_attempts: 3
+  initial_wait_s: 2.0
+  max_wait_s: 30.0

@@ -1,0 +1,50 @@
+groups:
+  - name: vayunetra-api-slo
+    rules:
+      # p95 served latency over 5m exceeds the global 4s envelope (the /enforce
+      # budget — the loosest of the per-endpoint budgets in the plan §6.2).
+      - alert: ApiP95LatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(vayunetra_inference_latency_seconds_bucket[5m])) by (le, handler)
+          ) > 4
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p95 latency on {{ $labels.handler }}"
+          description: "p95 served latency for {{ $labels.handler }} has exceeded 4s for 5 minutes."
+
+      # 5xx error ratio above 5% over 5 minutes.
+      - alert: ApiErrorRateHigh
+        expr: |
+          sum(rate(vayunetra_http_requests_total{status=~"5.."}[5m]))
+          /
+          sum(rate(vayunetra_http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Elevated 5xx error rate"
+          description: "More than 5% of requests are returning 5xx over the last 5 minutes."
+
+  - name: vayunetra-targets
+    rules:
+      - alert: ApiTargetDown
+        expr: up{job="vayunetra-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "VayuNetra API scrape target is down"
+          description: "Prometheus cannot scrape the API /metrics endpoint."
+
+      - alert: PrefectTargetDown
+        expr: up{job="prefect"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prefect server scrape target is down"
+          description: "Ingestion orchestration metrics are unavailable."

@@ -82,3 +82,29 @@ pre.brief { background: #0d1626; color: #e7ecf8; padding: 14px; border-radius: 8
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Compare split-view */
+#compare-view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#compare-view[hidden] { display: none; }
+.compare-header { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 8px 16px; background: #1b2742; color: #e7ecf8; font-weight: 600; font-size: 14px; }
+.compare-label { flex: 1; text-align: center; }
+.compare-maps { display: flex; flex: 1; min-height: 0; }
+.compare-maps > div { flex: 1; min-height: 0; }
+#map-left { border-right: 2px solid #243152; }
+
+body.compare-active main { display: none; }
+body.compare-active #compare-view { display: flex; }
+
+.intervention-chart { background: #f7f9ff; padding: 12px 18px; border-top: 1px solid #243152; }
+.intervention-chart h3 { margin: 0 0 8px; font-size: 13px; color: #4a5878; text-transform: uppercase; }
+.chart-bars { display: flex; gap: 16px; }
+.chart-item { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.chart-label { font-size: 11px; font-weight: 600; color: #1a2240; }
+.chart-bar-bg { background: #d8e0f4; border-radius: 4px; height: 22px; overflow: hidden; }
+.chart-bar { height: 100%; border-radius: 4px; font-size: 10px; color: #fff; display: flex; align-items: center; padding-left: 6px; font-weight: 600; }
+.chart-bar.before { background: #fe6a69; }
+.chart-bar.after { background: #a8e05f; color: #1a2240; }
+.chart-legend { margin-top: 8px; font-size: 11px; color: #4a5878; display: flex; align-items: center; gap: 12px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.dot.before { background: #fe6a69; }
+.dot.after { background: #a8e05f; }

@@ -14,7 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from vayunetra.api.observability import setup_observability
 from vayunetra.api.routers import advisory, attribution, enforce, forecast, health
+from vayunetra.channels.ivr import router as ivr_router
 from vayunetra.common.config import get_settings
 from vayunetra.common.logging import configure_logging
 
@@ -34,11 +36,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Prometheus /metrics, OpenTelemetry tracing, structured request logging.
+setup_observability(app)
+
 app.include_router(health.router)
 app.include_router(forecast.router)
 app.include_router(attribution.router)
 app.include_router(enforce.router)
 app.include_router(advisory.router)
+
+if settings.enable_langgraph:
+    from vayunetra.api.routers import agent
+
+    app.include_router(agent.router)
+app.include_router(ivr_router)
 
 
 _FRONTEND_DIR = Path(__file__).resolve().parents[3] / "frontend"
