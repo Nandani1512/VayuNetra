@@ -37,23 +37,31 @@ def router_node(state: AgentState) -> dict[str, Any]:
     return {"intent": intent}
 
 
+def _extract_city(msg: str) -> str:
+    m = msg.lower()
+    if "bengaluru" in m or "bangalore" in m or "blr" in m:
+        return "bengaluru"
+    return "delhi"
+
+
 def forecast_node(state: AgentState) -> dict[str, Any]:
     """Get current AQI from forecast table."""
+    city = _extract_city(state["user_message"])
     try:
         from sqlalchemy import text
         from vayunetra.storage.db import get_engine
         with get_engine().begin() as conn:
             row = conn.execute(text(
                 "SELECT city_id, pollutant, AVG(p50) as mean_aqi, MIN(p50) as min_aqi, MAX(p50) as max_aqi, COUNT(*) as cells "
-                "FROM forecast WHERE city_id='delhi' AND pollutant='pm25' "
-                "AND ts_target = (SELECT MAX(ts_target) FROM forecast WHERE city_id='delhi' AND pollutant='pm25') "
+                "FROM forecast WHERE city_id=:city AND pollutant='pm25' "
+                "AND ts_target = (SELECT MAX(ts_target) FROM forecast WHERE city_id=:city AND pollutant='pm25') "
                 "GROUP BY city_id, pollutant"
-            )).fetchone()
+            ), {"city": city}).fetchone()
         if row:
-            result = {"city": "Delhi", "pollutant": "PM2.5", "mean_aqi": round(float(row.mean_aqi), 1),
+            result = {"city": city.title(), "pollutant": "PM2.5", "mean_aqi": round(float(row.mean_aqi), 1),
                       "min_aqi": round(float(row.min_aqi), 1), "max_aqi": round(float(row.max_aqi), 1), "grid_cells": int(row.cells)}
         else:
-            result = {"city": "Delhi", "info": "No forecast data available"}
+            result = {"city": city.title(), "info": "No forecast data available"}
     except Exception as e:
         result = {"error": str(e)}
     return {"tool_result": result}
@@ -69,17 +77,18 @@ def attribution_node(state: AgentState) -> dict[str, Any]:
 
 def enforce_node(state: AgentState) -> dict[str, Any]:
     """Get enforcement hotspot summary."""
+    city = _extract_city(state["user_message"])
     try:
         from sqlalchemy import text
         from vayunetra.storage.db import get_engine
         with get_engine().begin() as conn:
             row = conn.execute(text(
-                "SELECT COUNT(*) as n FROM forecast WHERE city_id='delhi' AND pollutant='pm25' "
-                "AND ts_target = (SELECT MAX(ts_target) FROM forecast WHERE city_id='delhi' AND pollutant='pm25') "
+                "SELECT COUNT(*) as n FROM forecast WHERE city_id=:city AND pollutant='pm25' "
+                "AND ts_target = (SELECT MAX(ts_target) FROM forecast WHERE city_id=:city AND pollutant='pm25') "
                 "AND p50 > 90"
-            )).fetchone()
+            ), {"city": city}).fetchone()
         hot = int(row.n) if row else 0
-        result = {"city": "Delhi", "cells_above_poor": hot, "method": "Getis-Ord Gi* + DBSCAN clustering",
+        result = {"city": city.title(), "cells_above_poor": hot, "method": "Getis-Ord Gi* + DBSCAN clustering",
                   "recommendation": "Deploy inspection teams to high-density clusters with vehicular + industrial attribution"}
     except Exception as e:
         result = {"error": str(e)}
@@ -88,20 +97,21 @@ def enforce_node(state: AgentState) -> dict[str, Any]:
 
 def advisory_node(state: AgentState) -> dict[str, Any]:
     """Get health advisory."""
+    city = _extract_city(state["user_message"])
     try:
         from sqlalchemy import text
         from vayunetra.storage.db import get_engine
         with get_engine().begin() as conn:
             row = conn.execute(text(
-                "SELECT AVG(p50) as mean FROM forecast WHERE city_id='delhi' AND pollutant='pm25' "
-                "AND ts_target = (SELECT MAX(ts_target) FROM forecast WHERE city_id='delhi' AND pollutant='pm25')"
-            )).fetchone()
+                "SELECT AVG(p50) as mean FROM forecast WHERE city_id=:city AND pollutant='pm25' "
+                "AND ts_target = (SELECT MAX(ts_target) FROM forecast WHERE city_id=:city AND pollutant='pm25')"
+            ), {"city": city}).fetchone()
         aqi = round(float(row.mean), 1) if row and row.mean else 75
         if aqi <= 50: sev, advice = "Good", "Air quality is satisfactory. Enjoy outdoor activities."
         elif aqi <= 100: sev, advice = "Moderate", "Sensitive groups should reduce prolonged outdoor exertion."
         elif aqi <= 200: sev, advice = "Poor", "Everyone should reduce outdoor exposure. Wear N95 masks outdoors."
         else: sev, advice = "Severe", "Avoid all outdoor activities. Keep windows closed. Use air purifiers."
-        result = {"city": "Delhi", "aqi": aqi, "severity": sev, "advice": advice}
+        result = {"city": city.title(), "aqi": aqi, "severity": sev, "advice": advice}
     except Exception as e:
         result = {"error": str(e)}
     return {"tool_result": result}
